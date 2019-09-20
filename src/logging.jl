@@ -1,7 +1,7 @@
 """
     local_logging(mkt::Market, log_level::AbstractString="debug")
 
-Formats logging on all workers.
+Formats logging on all workers. Returns `nothing`.
 """
 function local_logging(mkt::Market, log_level::AbstractString="debug")
     @eval begin
@@ -14,6 +14,8 @@ function local_logging(mkt::Market, log_level::AbstractString="debug")
             setlevel!(getlogger(), level; recursive=true)
         end
     end
+
+    return nothing
 end
 
 # Helper function to avoid loading extra packages on workers
@@ -82,3 +84,26 @@ function cloudwatch_logging(
     return log_group
 end
 
+"""
+    job_logging(
+        mkt::Market,
+        log_level_override::AbstractString...;
+        log_group_prefix::AbstractString="eis/job",
+    )
+
+Sets up cloudwatch logging if running on AWS Batch and local logging otherwise.
+If `log_level_override` is not specified, the default logging level for
+[`cloudwatch_logging`](@ref) or [`local_logging`](@ref) will be used.
+Returns the log group name as a `String` if running AWS Batch, otherwise it returns `nothing`.
+"""
+function job_logging(
+    mkt::Market,
+    args...;
+    log_group_prefix::AbstractString="eis/job",
+)
+    if haskey(ENV, "AWS_BATCH_JOB_ID")
+        EISJobs.cloudwatch_logging(mkt, log_group_prefix, args...)
+    else
+        EISJobs.local_logging(mkt, args...)
+    end
+end

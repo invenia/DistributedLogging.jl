@@ -82,4 +82,22 @@
             log_group !== nothing && delete_group(aws_config(), log_group)
         end
     end
+
+    @testset "job_logging" begin
+        manager = AWSBatchManager(0)
+        log_group = nothing
+        old_handlers = copy(gethandlers(getlogger()))
+        try
+            log_group = withenv("AWS_BATCH_JOB_ID" => 1) do
+                job_logging(market, "debug"; log_group_prefix=prefix)
+            end
+            @test match(log_group_regex, log_group) !== nothing
+
+            @test getlevel(getlogger()) == "debug"
+        finally
+            rmprocs(workers())
+            getlogger().handlers = old_handlers  # Stop logging to cloudwatch
+            log_group !== nothing && delete_group(aws_config(), log_group)
+        end
+    end
 end

@@ -10,6 +10,22 @@
     @test getlevel(JOBS_LOGGER) == "warn"
 end
 
+@testset "job_logging" begin
+    market = FakeMarket()
+
+    log_group = withenv("AWS_BATCH_JOB_ID" => nothing) do
+        job_logging(market)
+    end
+    @test getlevel(JOBS_LOGGER) == "debug"
+
+    log_group = withenv("AWS_BATCH_JOB_ID" => nothing) do
+        # `prefix` arg is unused locally
+        job_logging(market, "notice")
+    end
+    @test getlevel(JOBS_LOGGER) == "notice"
+    @test log_group === nothing
+end
+
 @testset "local_setup" begin
     market = FakeMarket()
     manager = LocalManager(2, true)
