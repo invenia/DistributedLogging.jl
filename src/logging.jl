@@ -22,13 +22,13 @@ end
 function _log_batch_worker(log_group::AbstractString, manager_id::Integer)
     # Sending the config to the worker causes arcane errors
     config = aws_config()
-    log_stream = create_stream(
-            config,
-            log_group,
-            string(myid() == manager_id ? "manager" : "worker-$(myid())", "/", uuid4()),
-        )
+    log_stream = @mock create_stream(
+        config,
+        log_group,
+        string(myid() == manager_id ? "manager" : "worker-$(myid())", "/", uuid4()),
+    )
 
-    push!(getlogger(), CloudWatchLogHandler(config, log_group, log_stream))
+    push!(getlogger(), @mock CloudWatchLogHandler(config, log_group, log_stream))
     info(getlogger(), "Logging to CloudWatch Log Group $log_group in Log Stream $log_stream")
 
     log_url = "https://console.aws.amazon.com/cloudwatch/home?region=$(config[:region])"
@@ -72,7 +72,7 @@ function cloudwatch_logging(
     config = aws_config()
     date = today(timezone(mkt))
     group_path = "/$prefix/$date/$(uuid4())"
-    log_group = create_group(config, group_path; tags=Dict("Date" => "$date"))
+    log_group = @mock create_group(config, group_path; tags=Dict("Date" => "$date"))
 
     @eval begin
         @everywhere let group = $log_group, manager_id = $(myid())
