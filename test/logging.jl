@@ -9,7 +9,7 @@
         std = stdout
         r, w = redirect_stdout()
         try
-            EISJobs.local_logging(market)
+            EISJobs.local_logging(market; substitute=false)
             info(getlogger(), "testing header")
         finally
             redirect_stdout(std)
@@ -19,9 +19,12 @@
 
         @test occursin(Regex("\\[.* | FakeGrid | info | root]: testing header"), output)
         @test getlevel(JOBS_LOGGER) == "debug"
+        @test_nolog getlogger() "warn" "testing substitute" @warn "testing substitute"
 
         EISJobs.local_logging(market, "warn")
         @test getlevel(JOBS_LOGGER) == "warn"
+        @test_log getlogger() "warn" "testing substitute" @warn "testing substitute"
+        Base.CoreLogging.global_logger(ORIG_LOGGER)
     end
 
     @testset "cloudwatch_logging" begin
@@ -72,11 +75,12 @@
         end
 
         output, log_group = test_cloudwatch() do
-            EISJobs.cloudwatch_logging(market, prefix, "debug")
+            EISJobs.cloudwatch_logging(market, prefix, "debug"; substitute=false)
         end
         @test getlevel(getlogger()) == "debug"
         @test occursin(log_group_regex, log_group)
         @test occursin("Log Group $log_group in Log Stream manager/", output)
+        @test_nolog getlogger() "warn" "testing substitute" @warn "testing substitute"
     end
 
     @testset "job_logging" begin
@@ -85,22 +89,26 @@
                 log_group = job_logging(market)
                 @test getlevel(JOBS_LOGGER) == "debug"
                 @test log_group === nothing
+                @test_log getlogger() "warn" "testing substitute" @warn "testing substitute"
+                Base.CoreLogging.global_logger(ORIG_LOGGER)
 
-                log_group = job_logging(market, "notice")
+                log_group = job_logging(market, "notice"; substitute=false)
                 @test getlevel(JOBS_LOGGER) == "notice"
                 @test log_group === nothing
+                @test_nolog getlogger() "warn" "testing substitute" @warn "testing substitute"
             end
         end
 
         @testset "Batch" begin
             withenv("AWS_BATCH_JOB_ID" => 1) do
                 output, log_group = test_cloudwatch() do
-                    job_logging(market, "debug"; log_group_prefix=prefix)
+                    job_logging(market, "debug"; log_group_prefix=prefix, substitute=false)
                 end
 
                 @test occursin(log_group_regex, log_group)
                 @test getlevel(getlogger()) == "debug"
                 @test occursin("Log Group $log_group in Log Stream manager/", output)
+                @test_nolog getlogger() "warn" "testing substitute" @warn "testing substitute"
             end
         end
     end
