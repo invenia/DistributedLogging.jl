@@ -27,3 +27,16 @@ function test_cloudwatch(f)
 
     return String(take!(output_buffer)), result
 end
+
+function equals_ignore_order(a::NamedTuple, b::NamedTuple)
+    # `merge` sorts to the order of left hand argument
+    merge(a, b) == a && merge(b, a) == b
+end
+
+@testset "test_utils" begin
+    @test equals_ignore_order((a=1, b="2"), (a=1, b="2"))
+    @test equals_ignore_order((a=1, b="2"), (b="2", a=1))
+
+    @test !equals_ignore_order((a=1, b="2"), (b="2",))
+    @test !equals_ignore_order((a=1, b="2"), (a=4, b="2"))
+end
