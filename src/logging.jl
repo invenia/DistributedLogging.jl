@@ -91,13 +91,14 @@ end
 """
     job_logging(
         mkt::Market,
-        log_level_override::AbstractString...;
+        log_level_override::AbstractString;
         log_group_prefix::AbstractString="eis/job",
         substitute::Bool=true,
     )
 
 Sets up cloudwatch logging if running on AWS Batch and local logging otherwise.
-If `log_level_override` is not specified, the default logging level for
+`log_level_override` represents the `level` argument passed to `Memento.config!`.
+If `log_level_override` is not specified, the default `log_level` for
 [`cloudwatch_logging`](@ref) or [`local_logging`](@ref) will be used.
 `substitute` defines whether to replace base julia logging with Memento.
 Returns the log group name as a `String` if running AWS Batch, otherwise it returns `nothing`.
