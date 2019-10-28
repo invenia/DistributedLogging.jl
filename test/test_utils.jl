@@ -1,5 +1,5 @@
 using CloudWatchLogs
-using AWSBatch: describe
+using AWSBatch
 
 function test_cloudwatch(f)
     old_handlers = copy(gethandlers(getlogger()))
@@ -15,7 +15,7 @@ function test_cloudwatch(f)
         @patch create_group(::Any, group_path::String; kwargs...) = group_path
         @patch create_stream(::Any, log_group::String, stream_name::String) = stream_name
         @patch CloudWatchLogHandler(args...) = DefaultHandler(output_buffer)
-        @patch describe(job) = job_description
+        @patch AWSBatch.describe(job) = job_description
     ]
     apply(cloudwatch_patches) do
         try
