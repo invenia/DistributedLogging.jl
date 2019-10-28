@@ -40,7 +40,7 @@ function _log_batch_worker(log_group::AbstractString, manager_id::Integer)
         job = BatchJob(ENV["AWS_BATCH_JOB_ID"])
 
         info(getlogger(), "Worker ID $(myid()) Maps to AWS Batch Job ID $(job.id)")
-        job_description = @mock describe(job)
+        job_description = @mock AWSBatch.describe(job)
         definition = job_description["jobDefinition"]
         docker = job_description["container"]["image"]
         info(getlogger(), "AWS Batch Job Definition: $definition")
