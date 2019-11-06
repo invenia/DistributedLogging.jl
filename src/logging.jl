@@ -35,18 +35,6 @@ function _log_batch_worker(log_group::AbstractString, manager_id::Integer)
     log_url = "https://console.aws.amazon.com/cloudwatch/home?region=$(config[:region])"
     info(getlogger(), "CloudWatch URL: $log_url#logStream:group=$log_group;stream=$log_stream")
 
-    # If we're a worker, log some useful info
-    if myid() != manager_id && haskey(ENV, "AWS_BATCH_JOB_ID")
-        job = BatchJob(ENV["AWS_BATCH_JOB_ID"])
-
-        info(getlogger(), "Worker ID $(myid()) Maps to AWS Batch Job ID $(job.id)")
-        job_description = @mock AWSBatch.describe(job)
-        definition = job_description["jobDefinition"]
-        docker = job_description["container"]["image"]
-        info(getlogger(), "AWS Batch Job Definition: $definition")
-        info(getlogger(), "Docker Image: $docker")
-    end
-
     return log_stream
 end
 

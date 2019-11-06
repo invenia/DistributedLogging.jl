@@ -40,11 +40,7 @@
                 end
 
                 @test startswith(log_stream, "worker-$my_id/")
-
                 @test occursin("Log Group $prefix in Log Stream $log_stream", output)
-                @test occursin("Job ID FakeJobId", output)
-                @test occursin("Job Definition: FakeJobDefinition", output)
-                @test occursin("Image: FakeImageName", output)
 
                 # Test manager on batch
                 output, log_stream  = test_cloudwatch() do
@@ -52,7 +48,6 @@
                 end
                 @test startswith(log_stream, "manager/")
                 @test occursin("Log Group $prefix in Log Stream $log_stream", output)
-                @test !occursin("Job ID FakeJobId", output)
             end
 
             withenv("AWS_BATCH_JOB_ID" => nothing) do
@@ -62,7 +57,6 @@
                 end
                 @test startswith(log_stream, "manager/")
                 @test occursin("Log Group $prefix in Log Stream $log_stream", output)
-                @test !occursin("Job ID FakeJobId", output)
 
                 # Test worker off batch
                 output, log_stream  = test_cloudwatch() do
@@ -70,7 +64,6 @@
                 end
                 @test startswith(log_stream, "worker-$my_id/")
                 @test occursin("Log Group $prefix in Log Stream $log_stream", output)
-                @test !occursin("Job ID FakeJobId", output)
             end
         end
 
