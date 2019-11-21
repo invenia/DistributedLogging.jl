@@ -12,7 +12,7 @@ function local_logging(mkt::Market, log_level::AbstractString="debug"; substitut
             using Memento
 
             Memento.config!(level; fmt="[{date} | $mkt | {level} | {name}]: {msg}", substitute=sub)
-            setlevel!(getlogger(), level; recursive=true)
+            setlevel!(getlogger(), level)
         end
     end
 
