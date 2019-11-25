@@ -1,7 +1,7 @@
 using CloudWatchLogs
 
 function test_cloudwatch(f)
-    old_handlers = copy(gethandlers(getlogger()))
+    old_handlers = copy(gethandlers(LOGGER))
     result = missing
     # Mock out cloudwatch
     output_buffer = IOBuffer()
@@ -15,7 +15,7 @@ function test_cloudwatch(f)
         try
             result = f()
         finally
-            getlogger().handlers = old_handlers # Remove fake cloudwatch handler
+            LOGGER.handlers = old_handlers # Remove fake cloudwatch handler
         end
     end
 
