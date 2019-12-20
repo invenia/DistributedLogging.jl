@@ -29,7 +29,15 @@ function _log_batch_worker(log_group::AbstractString, manager_id::Integer)
         string(myid() == manager_id ? "manager" : "worker-$(myid())", "/", uuid4()),
     )
 
-    push!(getlogger(), @mock CloudWatchLogHandler(config, log_group, log_stream))
+    # Give AWS a sec to create the stream
+    sleep(1)
+
+    # Retry creating the handler 3 times as it may take a bit to create the log stream
+    f = retry(; delays=Base.ExponentialBackOff(n=3, first_delay=5, max_delay=600)) do
+        @mock CloudWatchLogHandler(config, log_group, log_stream)
+    end
+
+    push!(getlogger(), f())
     info(getlogger(), "Logging to CloudWatch Log Group $log_group in Log Stream $log_stream")
 
     log_url = "https://console.aws.amazon.com/cloudwatch/home?region=$(config[:region])"
