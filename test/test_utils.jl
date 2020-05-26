@@ -34,19 +34,3 @@ end
     @test !equals_ignore_order((a=1, b="2"), (b="2",))
     @test !equals_ignore_order((a=1, b="2"), (a=4, b="2"))
 end
-
-# TODO: This can be replaced by Forecasters.TestUtils with Forecasters v3
-# https://gitlab.invenia.ca/invenia/EISJobs.jl/-/issues/35
-struct DummyForecaster <: AbstractForecaster
-    market::Market
-end
-
-function Forecasters.fetch(f::DummyForecaster, client, sim_now, nodes)
-    ts = DateOffsets.targets(f, sim_now)
-    p_data = Dict(t => IndexedDistribution(MvNormal(rand(length(nodes)), rand()), nodes) for t in ts)
-    return nothing, p_data
-end
-
-Forecasters.transform(::DummyForecaster, raw_data) = raw_data
-Forecasters.fit(f::DummyForecaster, fit_data) = f
-Forecasters.predict(f::DummyForecaster, predict_data, target) = predict_data[target]
