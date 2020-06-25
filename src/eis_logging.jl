@@ -76,7 +76,7 @@ function cloudwatch_logging(
 
     @eval begin
         @everywhere let group = $log_group, manager_id = $(myid())
-            using EISJobs: _log_batch_worker
+            using DistributedLogging: _log_batch_worker
             _log_batch_worker(group, manager_id)
         end
     end
@@ -106,8 +106,8 @@ function job_logging(
     substitute::Bool=true,
 )
     if haskey(ENV, "AWS_BATCH_JOB_ID")
-        EISJobs.cloudwatch_logging(mkt, log_group_prefix, args...; substitute=substitute)
+        cloudwatch_logging(mkt, log_group_prefix, args...; substitute=substitute)
     else
-        EISJobs.local_logging(mkt, args...; substitute=substitute)
+        local_logging(mkt, args...; substitute=substitute)
     end
 end

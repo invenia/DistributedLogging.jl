@@ -1,4 +1,4 @@
-@testset "logging" begin
+@testset "eis_logging" begin
     market = FakeMarket()
     prefix = "TEST-CLOUDWATCH"
     log_group_regex = Regex("^/$prefix/\\d*-\\d*-\\d*\\/.*")
@@ -9,7 +9,7 @@
         std = stdout
         r, w = redirect_stdout()
         try
-            EISJobs.local_logging(market; substitute=false)
+            local_logging(market; substitute=false)
             info(LOGGER, "testing header")
         finally
             redirect_stdout(std)
@@ -21,7 +21,7 @@
         @test getlevel(LOGGER) == "debug"
         @test_nolog LOGGER "warn" "testing substitute" @warn "testing substitute"
 
-        EISJobs.local_logging(market, "warn")
+        local_logging(market, "warn")
         @test getlevel(LOGGER) == "warn"
         @test_log LOGGER "warn" "testing substitute" @warn "testing substitute"
         Base.CoreLogging.global_logger(ORIG_LOGGER)
@@ -36,7 +36,7 @@
             withenv("AWS_BATCH_JOB_ID" => "FakeJobId") do
                 # Test worker on batch
                 output, log_stream  = test_cloudwatch() do
-                    EISJobs._log_batch_worker(prefix, my_id + 1)
+                    DistributedLogging._log_batch_worker(prefix, my_id + 1)
                 end
 
                 @test startswith(log_stream, "worker-$my_id/")
@@ -44,7 +44,7 @@
 
                 # Test manager on batch
                 output, log_stream  = test_cloudwatch() do
-                    EISJobs._log_batch_worker(prefix, my_id)
+                    DistributedLogging._log_batch_worker(prefix, my_id)
                 end
                 @test startswith(log_stream, "manager/")
                 @test occursin("Log Group $prefix in Log Stream $log_stream", output)
@@ -53,14 +53,14 @@
             withenv("AWS_BATCH_JOB_ID" => nothing) do
                 # Test manager off batch
                 output, log_stream  = test_cloudwatch() do
-                    EISJobs._log_batch_worker(prefix, my_id)
+                    DistributedLogging._log_batch_worker(prefix, my_id)
                 end
                 @test startswith(log_stream, "manager/")
                 @test occursin("Log Group $prefix in Log Stream $log_stream", output)
 
                 # Test worker off batch
                 output, log_stream  = test_cloudwatch() do
-                    EISJobs._log_batch_worker(prefix, my_id + 1)
+                    DistributedLogging._log_batch_worker(prefix, my_id + 1)
                 end
                 @test startswith(log_stream, "worker-$my_id/")
                 @test occursin("Log Group $prefix in Log Stream $log_stream", output)
@@ -68,7 +68,7 @@
         end
 
         output, log_group = test_cloudwatch() do
-            EISJobs.cloudwatch_logging(market, prefix, "debug"; substitute=false)
+            cloudwatch_logging(market, prefix, "debug"; substitute=false)
         end
         @test getlevel(LOGGER) == "debug"
         @test occursin(log_group_regex, log_group)
@@ -106,5 +106,3 @@
         end
     end
 end
-
-
