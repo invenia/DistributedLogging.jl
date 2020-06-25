@@ -1,5 +1,6 @@
 using DistributedLogging
 
+using Compat: only
 using CloudWatchLogs
 using Distributed
 using ElectricityMarkets
