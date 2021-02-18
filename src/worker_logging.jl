@@ -6,7 +6,7 @@ Set up worker logs, and save the logs to `p/experiment.log.i` where `i` is the w
 function worker_logging(p::AbstractPath)
     @eval begin # Needed when @everywhere is not at the top level (i.e. inside a function)
         @everywhere begin
-            using FilePathsBase: exists
+            using FilePathsBase: exists, /
             using Memento: getlogger, DefaultHandler, DefaultFormatter
             using Distributed
 
