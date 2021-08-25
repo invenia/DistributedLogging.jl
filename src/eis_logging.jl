@@ -22,7 +22,7 @@ end
 # Helper function to avoid loading extra packages on workers
 function _log_batch_worker(log_group::AbstractString, manager_id::Integer)
     # Sending the config to the worker causes arcane errors
-    config = aws_config()
+    config = global_aws_config()
     log_stream = @mock create_stream(
         config,
         log_group,
@@ -40,7 +40,7 @@ function _log_batch_worker(log_group::AbstractString, manager_id::Integer)
     push!(getlogger(), f())
     info(getlogger(), "Logging to CloudWatch Log Group $log_group in Log Stream $log_stream")
 
-    log_url = "https://console.aws.amazon.com/cloudwatch/home?region=$(config[:region])"
+    log_url = "https://console.aws.amazon.com/cloudwatch/home?region=$(config.region)"
     info(getlogger(), "CloudWatch URL: $log_url#logStream:group=$log_group;stream=$log_stream")
 
     return log_stream
@@ -69,7 +69,7 @@ function cloudwatch_logging(
 )
     local_logging(mkt, log_level; substitute=substitute)
 
-    config = aws_config()
+    config = global_aws_config()
     date = today(timezone(mkt))
     group_path = "/$prefix/$date/$(uuid4())"
     log_group = @mock create_group(config, group_path; tags=Dict("Date" => "$date"))

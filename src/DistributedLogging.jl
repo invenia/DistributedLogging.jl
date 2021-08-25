@@ -1,6 +1,6 @@
 module DistributedLogging
 
-using AWSCore: aws_config
+using AWS
 using CloudWatchLogs
 using Dates
 using Distributed
