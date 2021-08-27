@@ -1,10 +1,10 @@
 name = "DistributedLogging"
 uuid = "56fced94-f4e0-437a-8779-b4f1bd2ec40e"
 authors = ["Invenia Technical Computing Corporation"]
-version = "0.1.1"
+version = "0.2.0"
 
 [deps]
-AWSCore = "4f1ea46c-232b-54a6-9b17-cc2d0f3e6598"
+AWS = "fbe9abb3-538b-5e4e-ba9e-bc94f4f92ebc"
 CloudWatchLogs = "c4c1e6a2-6bdd-52e0-b56d-1d4734724d2d"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
@@ -16,9 +16,9 @@ TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [compat]
-AWSCore = "0.5, 0.6"
+AWS = "1"
 Compat = "2.2, 3"
-CloudWatchLogs = "1.2"
+CloudWatchLogs = "2"
 ElectricityMarkets = "1"
 FilePathsBase = "0.6, 0.7, 0.8, 0.9"
 Memento = "0.11, 0.12, 0.13, 1"
