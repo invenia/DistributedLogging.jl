@@ -1,7 +1,7 @@
 name = "DistributedLogging"
 uuid = "56fced94-f4e0-437a-8779-b4f1bd2ec40e"
 authors = ["Invenia Technical Computing Corporation"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 AWS = "fbe9abb3-538b-5e4e-ba9e-bc94f4f92ebc"
@@ -17,9 +17,9 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [compat]
 AWS = "1"
-Compat = "2.2, 3"
 CloudWatchLogs = "2"
-ElectricityMarkets = "1"
+Compat = "2.2, 3"
+ElectricityMarkets = "1, 2"
 FilePathsBase = "0.6, 0.7, 0.8, 0.9"
 Memento = "0.11, 0.12, 0.13, 1"
 Mocking = "0.7"
